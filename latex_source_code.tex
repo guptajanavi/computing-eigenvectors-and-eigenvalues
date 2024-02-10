@@ -1,0 +1,381 @@
+\documentclass[11pt]{article}
+
+\usepackage{epsfig}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{amsmath}
+\usepackage{xspace}
+\usepackage{theorem}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{minted}
+\usepackage{hyperref}
+% \usepackage{layout}% if you want to see the layout parameters
+% and now use \layout command in the body
+
+% This is the stuff for normal spacing
+\makeatletter
+ \setlength{\textwidth}{6in}
+ \setlength{\oddsidemargin}{0in}
+ \setlength{\evensidemargin}{0.5in}
+ \setlength{\topmargin}{0in}
+ \setlength{\textheight}{9in}
+ \setlength{\headheight}{0pt}
+ \setlength{\headsep}{0pt}
+ \setlength{\marginparwidth}{59pt}
+
+ \setlength{\parindent}{0pt}
+ \setlength{\parskip}{5pt plus 1pt}
+ \setlength{\theorempreskipamount}{5pt plus 1pt}
+ \setlength{\theorempostskipamount}{0pt}
+ \setlength{\abovedisplayskip}{8pt plus 3pt minus 6pt}
+
+
+\newenvironment{proof}{{\bf Proof:  }}{\hfill\rule{2mm}{2mm}}
+\newenvironment{proofof}[1]{{\bf Proof of #1:  }}{\hfill\rule{2mm}{2mm}}
+\newenvironment{proofofnobox}[1]{{\bf#1:  }}{}
+\newenvironment{example}{{\bf Example:  }}{\hfill\rule{2mm}{2mm}}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+
+% math notation
+\newcommand{\R}{\ensuremath{\mathbb R}}
+\newcommand{\C}{\ensuremath{\mathbb C}}
+\newcommand{\Z}{\ensuremath{\mathbb Z}}
+\newcommand{\N}{\ensuremath{\mathbb N}}
+\newcommand{\F}{\ensuremath{\mathbb F}}
+
+\newcommand{\size}[1]{\ensuremath{\left|#1\right|}}
+\newcommand{\ceil}[1]{\ensuremath{\left\lceil#1\right\rceil}}
+\newcommand{\floor}[1]{\ensuremath{\left\lfloor#1\right\rfloor}}
+
+
+% anupam's abbreviations
+\newcommand{\mnote}[1]{\normalmarginpar \marginpar{\tiny #1}}
+
+
+% vectors
+\renewcommand{\vec}[1]{\ensuremath{\mathbf{#1}}}
+
+\usepackage{comment}
+\newenvironment{sol}
+    {\textbf{Solution:}
+    }
+
+%\includecomment{sol}
+%\excludecomment{sol}
+
+\newenvironment{grade}
+    {
+    }
+
+%\includecomment{grade}
+\excludecomment{grade}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document begins here %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\pagestyle{empty}
+
+\begin{document}
+\pagenumbering{arabic}
+
+\begin{center}
+{\Huge Computing Eigenvectors and Eigenvalues:\\ QR method, Power method and Deflation}\\
+{\Large Janavi Gupta (janavig), Aditi Rao (aditirao)}
+\end{center}
+
+\section{Introduction}
+This project focuses on comprehending and investigating various methods for computing eigenvalues and eigenvectors of symmetric matrices. Additionally, it aims to compute singular values and singular vectors, not only for symmetric but also non-symmetric matrices. The methods under exploration include the QR Method, Power Method, and Deflation. Furthermore, this project delves into combining these techniques to achieve the intended results effectively.
+
+\section{Table of Contents}
+\begin{center}
+\begin{tabular}{ c  c  c }
+ \textbf{Section number} & \textbf{Topic} & \textbf{Page number} \\ 
+ 3 & The QR Method & 2 \\  
+ 4 & The Power Method & 4 \\
+ 5 & The Deflation Method & 7 \\
+ 6 & Computing Singular Values and Vectors & 9 \\
+ 7 & Code Design & 10 \\
+ 8 & Bibliography & 10 \\
+ 9 & Code & 11
+\end{tabular}
+\end{center}
+
+\newpage
+\section{The QR Method}
+\subsection{Introduction}
+To understand this method it is important to understand 2 concepts related to matrices
+\begin{itemize}
+    \item Similar Matrices : Two matrices $A$ and $B$ are said to be similar if there exists a matrix $X$ such that $A$ = $X^{-1}BX$. We also have that A, B have the same eigenvalues\\
+    \item QR method requires us to do the QR decomposition of a matrix A. This means A = QR, where Q is an orthogonal matrix and R is a upper triangular matrix. Since Q is an orthogonal matrix $Q^{-1}$ = $Q^{T}$. From this we have that  $Q^{-1}Q = Q^{T}Q = I$
+\end{itemize}
+
+Knowing these two concepts we can understand the QR method. Lets say we need to find the eigenvalues for a matrix $A_{0}$. starting at k = 0 we can do the QR decomposition to get\\
+$A_{k}$ = $Q_{k}R_{k}$, and we define $A_{k+1}$ = $R_{k}Q_{k}$. 
+We see that 
+\begin{align*}
+    A_{k+1} &= R_{k}Q_{k}\\
+    & = Q_{k}^{-1}Q_{k}R_{k}Q_{k} \tag{since $Q_{k}$ is orthogonal $Q_{k}^{-1}Q_{k}$ = I, IM = M for any matrix M}\\
+    & = Q_{k}^{-1}AQ_{k} \tag{$A_{k} = Q_{k}R_{k}$}
+\end{align*}
+
+This means $A_{k+1}$ is similar to $A_{k}$. This means for all $k>=0$, all $A_{k}$ are similar to each other and have the same eigenvalues. 
+
+As k approaches infinity (iterating k times) we have that $A_{k}$ converges to an upper triangular matrix, with all the eigenvalues on the diagonal. The element in the first row and the first column gives us the leading eigenvalue. 
+
+\subsection{Example}
+To understand the application of the QR Method, let's determine the leading eigenvalue for the matrix A:
+\[ A = \begin{bmatrix} 7 & 1 \\ 1 & 7 \end{bmatrix} \]
+
+In our code, by executing the iterative QR method on matrix A, we observe that it converges towards:
+\[ \begin{bmatrix} 8 & 0 \\ 0 & 6 \end{bmatrix} \]
+
+From this outcome, we determine that 8 is the leading eigenvalue of matrix A. This conclusion is drawn from the fact that it resides in the first row and the first column of the resultant matrix.
+
+\subsection{Pseudo code}
+\begin{itemize}
+    \item Define the QR Eigenvalue Function \texttt{qr\_method} that accepts the following:\\
+    $a.$ A symmetric matrix \texttt{A} with real values\\
+    $b.$ The number of times to iterate through the algorithm \texttt{max\_iter}
+    \item Create a copy of the matrix \texttt{A} and name it \texttt{$A_k$}.
+    \item For \texttt{max\_iter} times perform QR decomposition of \texttt{$A_k$} and set \texttt{$A_k$ = R * Q}
+    \item Lastly, return the first diagonal element of \texttt{$A_k$} as the leading eigenvalue of \texttt{A}.
+\end{itemize}
+
+\newpage
+\section{The Power Method}
+\subsection{Introduction}
+We use the power method to find the leading eigenvector and eigenvalue of a symmetric matrix A  $(n \times n)$. By the Spectral Theorem we have that A is a diagonalizable matrix. Since A is diagonalizable, it has $n$ independent eigenvectors \{$x_{1}$,...$x_{n}$\} with eigenvalues \{$\lambda_{1}$,..,$\lambda_{n}$\}. \{$x_{1}$,...$x_{n}$\} forms the basis for $\mathbb{R}^{n}$ since they are all independent vectors. \\
+
+Let $x_{0}$ be an arbitrary non-zero vector such that $x_{0} \in \mathbb{R}^{n}$. Since \{$x_{1}$,...$x_{n}$\} is a basis of $\mathbb{R}^{n}$ we can write $x_{0}$  as a linear combination of \{$x_{1}$,...$x_{n}$\}, with scalars $c_{1}, c_{2}...c_{n}$. 
+
+\begin{align*}
+     x_{0} = c_{1}x_{1} + ... + c_{n}x_{n} \tag{1}
+\end{align*}
+
+Now we multiply (1) with matrix A on both the sides
+
+\begin{align*}
+    Ax_{0} & = A(c_{1}x_{1} + c_{2}x_{2} + ... + c_{n}x_{n}) \tag{by substitution}\\
+    & = c_{1}(Ax_{1}) + c_{2}(Ax_{2}) + ... + c_{n}(Ax_{n}) \tag{by linearity}\\
+    & = c_{1}(\lambda_{1}x_{1}) + c_{2}(\lambda_{2}x_{2}) + ... + c_{n}(\lambda_{n}x_{n}) \tag{by eigenvalue defn}
+\end{align*}
+
+Repeated multiplication (say k times) by Matrix A on both the sides 
+
+\begin{align*}
+     A^{k}x_{0} &= c_{1}(\lambda_{1}^{k}x_{1}) + c_{2}(\lambda_{2}^{k}x_{2}) +... + c_{n}(\lambda_{n}^{k}x_{n}) \tag{by powers of matrix}\\
+     &= \lambda_{1}^{k}[c_{1}x_{1} + c_{2}(\tfrac{\lambda_{2}}{\lambda_{1}})^{k}x_{2} +... +  c_{n}(\tfrac{\lambda_{n}}{\lambda_{1}})^{k}x_{n}] \tag{by factoring out $\lambda_{1}^{k}$}\\
+\end{align*}
+
+Let i be such that  $1<i<=n$. Since $\lambda_{1}$ is the leading vector, we have that $\lambda_{1} > \lambda_{i}$ for all i. This implies $\tfrac{\lambda_{i}}{\lambda_{1}}$ is less than 1 for all i. So, as k approaches infinity, $(\tfrac{\lambda_{i}}{\lambda_{1}})^{k}$ approaches 0 for all i. 
+
+From this we get that 
+\begin{align*}
+     A^{k}x_{0} \approx \lambda_{1}^{k}c_{1}x_{1} \tag{all other terms go to 0}
+\end{align*}
+
+$\lambda_{1}^{k}$ and $c_{1}$ are both scalars, and hence normalizing $A^{k}x_{0}$ gives us the leading eigenvector\\
+
+For an eigenvector x, by definition of eigenvalue we have that
+\begin{align*}
+    Ax = \lambda x \tag{for eigenvalue $\lambda$}
+\end{align*}
+
+So, we can write
+
+\begin{align*}
+    \frac{Ax\cdot x}{x\cdot x} &= \frac{\lambda x\cdot x}{x\cdot x} \\
+    &= \frac{\lambda (x\cdot x)}{x\cdot x}\\
+    &= \lambda 
+\end{align*}
+
+So, we have that for a given eigenvector x, eigenvalue $\lambda$ is
+
+\begin{align*}
+        \lambda = \frac{Ax\cdot x}{x\cdot x} \\
+\end{align*}
+
+This is called Rayleigh quotient, and can be used to calculate the leading vector by plugging in the leading eigenvector in the place of x.\\
+
+This is how we can compute the leading eigenvector and eigenvalue using the Power Method
+
+\subsection{Example}
+To grasp the workings of the Power Method, let's determine the leading eigenvalue and eigenvector of the matrix A = 
+\[ A = 
+\begin{bmatrix}
+7 & 3 & 5 \\
+3 & 5 & 1 \\
+5 & 1 & 1 \\
+\end{bmatrix}
+\]
+
+In our code, we initialize \(x_0\) as 
+\[ x_{0} = 
+\begin{bmatrix}
+1 \\
+1 \\
+1 \\
+\end{bmatrix}
+\]
+
+By executing the Power Method on matrix A, as demonstrated in the code, we derive the leading eigenvector of the matrix. Subsequently, we leverage this eigenvector along with matrix A to compute the associated eigenvalue using the Rayleigh quotient, as previously explained.
+
+\subsection{Pseudo code}
+\begin{itemize}
+    \item Define the Power Method \texttt{power\_method} that accepts the following inputs:\\
+    $a.$ A symmetric matrix \texttt{A} with real values\\
+    $b.$ The number of times to iterate through the algorithm \texttt{max\_iter}
+    \item Determine the size of $A$ and store the number of rows in $n$. 
+    \item Initialize a random vector $v$ of size $n$
+    \item Normalize $v$ (set $v = \frac{v}{\|v\|}$)
+    \item For \texttt{max\_iter} times:\\
+    $a.$ Multiply $v$ by $A$ to get a new vector $v_{\text{new}}$ (set $v_{\text{new}} = Av$) \\           $b.$ Normalize $v_{\text{new}}$ (set $v_{\text{new}} = \frac{v_{\text{new}}}{\|v_{\text{new}}\|}$) and update $v = v_{\text{new}}$
+    \item Compute the eigenvalue using the Rayleigh quotient: $\text{eigenvalue} = \frac{\langle Av, v \rangle}{\langle v, v \rangle}$
+    \item Lastly, return the leading eigenvalue and the converged eigenvector $v$
+\end{itemize}
+
+\newpage
+\section{The Deflation Method}
+\subsection{Introduction}
+We can use the deflation method along with the power method to find the eigenvalues and eigenvectors of a symmetric matrix A $(n \times n)$. \\
+
+The  deflation method follows iteration and we start this method finding the largest eigenvalue of the $(n \times n)$ matrix and then reducing the matrix  to an $(n-1) \times (n-1)$ matrix, finding the largest eigenvalue of this matrix and further reducing this matrix to $(n-2) \times (n-2)$ and so on. We do this to eliminate the influence of the current largest eigenvalue in the next step. This is the general idea of the deflation method.\\
+
+Now going into the details to understand how and why this works, lets define matrix A such that 
+\begin{itemize}
+    \item it symmetric
+    \item it is real and an $(n \times n)$ matrix
+    \item with eigenvalues \{$\lambda_{1}$,...,$\lambda_{n}$\} and eigenvectors \{$v_{1}$,...,$v_{n}$\}
+\end{itemize}
+
+The main goal of deflation as described before is to get a $(n-1) \times (n-1)$ matrix with eigenvalues \{$\lambda_{2}$,...,$\lambda_{n}$\}\\
+
+Lets define another matrix $B = A - \lambda_{1}v_{1}v_{1}^{T}$ where $\lambda_{1}$ is the leading eigenvalue of A and $v_{1}$ is orthonormal (for simplicity), and the leading eigenvector of A. 
+
+We want to show how 0 is the eigenvalue corresponding to the eigenvector $v_{1}$ of B
+
+\begin{align*}
+    & B = A - \lambda_{1}v_{1}v_{1}^{T} \tag{by definition}\\
+    & Bv_{1} = (A - \lambda_{1}v_{1}v_{1}^{T})v_{1} \tag{multiplying by $v_{1}$ on bts}\\
+    & Bv_{1} = Av_{1} - \lambda_{1}v_{1}(v_{1}^{T}v_{1}) \tag{expanding RHS, linearity}\\
+   & Bv_{1} = Av_{1} - \lambda_{1}v_{1}(1) \tag{$v_{1}$ is orthonormal}\\
+   & Bv_{1} = \lambda_{1}v_{1} - \lambda_{1}v_{1} \tag{$Av_{1} = \lambda_{1}v_{1}$ since $\lambda_{1}$ is eigenvalue}\\
+    & Bv_{1} = 0v_{1} \tag{by math}\\
+\end{align*}
+
+Therefore, $0$ is the eigenvalue corresponding to eigenvector $v_{1}$ for matrix B\\
+
+Given this we also want to show that the remaining eigenvectors of A  \{$v_{2}$,...,$v_{n}$\} are still eigenvectors for matrix B with the corresponding eigenvalues \{$\lambda_{2}$,...,$\lambda_{n}$\}.\\
+
+Let $v_{i}$ be a random eigenvector of A with eigenvalue $\lambda_{i}$ such that $1<i<=n$. Then,\\
+
+\begin{align*}
+    & Bv_{i} = (A - \lambda_{1}v_{1}v_{1}^{T})v_{i} \tag{definition of B, multiplying by $v_{i}$}\\ 
+    & Bv_{i} = Av_{i} - \lambda_{1}v_{1}v_{1}^{T}v_{i} \tag{linearity}\\ 
+    & Bv_{i} = Av_{i} \tag{$\lambda_{1} = 0$, for B}\\
+    & Bv_{i} = \lambda_{i}v_{i} \tag{definition of eigenvalue $Av_{i} = \lambda_{i}v_{i}$}
+\end{align*}
+
+Hence, we have successfully created a $(n-1) \times (n-1)$ matrix B, with eigenvalues \{$\lambda_{2}$,...,$\lambda_{n}$\}, and eigenvectors  \{$v_{2}$,...,$v_{n}$\} as desired.\\
+
+We use the power method on matrix B to get the leading eigenvalue and eigenvector. After this, we continue to do the matrix deflation process to get all the eigenvalues and eigenvectors of the original matrix A in this manner.
+
+
+
+\subsection{Example}
+To comprehend the deflation method, we aim to compute the eigenvectors and eigenvalues of a matrix. We apply this approach to matrix A:
+\[ A = \begin{bmatrix} 7 & 3 & 5 \\ 3 & 5 & 1 \\ 5 & 1 & 1 \end{bmatrix} \]
+
+The complete process, including the computation of eigenvalues and eigenvectors of matrix A along with the intermediary steps, is explicitly detailed in the provided code (section 9)
+
+\subsection{Pseudo code}
+\begin{itemize}
+    \item Define a Deflation method \texttt{deflation} that accepts:\\
+    $a. $ A symmetric matrix \texttt{A} with real values\\
+    $b. $ The number of iterations \texttt{max\_iter}
+    \item Determine the size of \texttt{A} and store the number of rows in \( n \)
+    \item Initialize empty lists for eigenvalues and eigenvectors
+    \item For each eigenvalue and eigenvector pair to be found:\\
+    $a. $ Use \texttt{power\_method} as defined above with \texttt{A} and \texttt{max\_iter} to obtain the leading eigenvalue and eigenvector \\
+    $b. $ Add the found eigenvalue and eigenvector to their respective lists
+    $b. $ Deflate \texttt{A} using the formula: \( A = A - \text{eigenvalue} \times \text{eigenvector} \times \text{eigenvector}^T \)
+    \item Return the lists of eigenvalues and eigenvectors.
+\end{itemize}
+
+\newpage
+\section{Singular values and Singular vectors}
+\subsection{Introduction}
+To obtain the singular vectors of a matrix A, we calculate the eigenvectors of both the matrices $A^{T}A$ and $AA^{T}$. This involves utilizing the previously mentioned deflation and power methods. These resulting eigenvectors provide us with all the singular vectors of matrix A, meeting our objective.\\
+
+To determine the singular values of matrix A, we employ a method that involves computing the eigenvalues of either $A^{T}A$ or $AA^{T}$ matrices. This process is conducted through deflation and the power method, as previously explained. Once we have these eigenvalues, we obtain the singular values of matrix A by taking the square root of these eigenvalues, thereby achieving the desired result of singular values for matrix A.
+
+\subsection{Example}
+To comprehend the computation of singular vectors and singular values for a matrix, we'll demonstrate this process for matrix A:
+\[ A = \begin{bmatrix} 1 & 2 \\ 3 & 5 \\ 4 & 0 \end{bmatrix} \]
+
+In the provided code (section 9) , we'll determine the singular values and singular vectors of matrix A. This will involve employing the power method and deflation method for accurate computation.
+
+
+\subsection{Pseudo code}
+\begin{itemize}
+    \item Define a function to obtain the singular values and vectors \texttt{singular\_values\_vectors} that accepts:\\
+    $a. $ A matrix \texttt{A}.\\
+    $b. $The number of iterations \texttt{max\_iter}.
+    \item Compute and store \( A^TA \) and \( AA^T \)
+    \item Apply \texttt{power\_method} on \( A^TA \) to obtain the leading eigenvalue and eigenvector.
+    \item Apply \texttt{deflation} on \( A^TA \) to obtain all right singular vectors and singular values.
+    \item Compute the square root of each eigenvalue to get singular values.
+    \item Apply \texttt{power\_method} on \( AA^T \) to obtain the leading eigenvalue and eigenvector.
+    \item Apply \texttt{deflation} on \( AA^T \) to obtain all left singular vectors.
+    \item Return the singular values, right singular vectors, and left singular vectors.
+\end{itemize}
+
+\newpage
+\section{Code Design}
+The code consists of the following methods:
+\begin{itemize}
+    \item QR method: The \texttt{qr\_method} function approximates the leading eigenvalue of a matrix using the QR algorithm. It is an iterative method involving repeated QR decompositions and matrix multiplications. The leading eigenvalue is estimated as the first diagonal element of the resulting matrix after a specified number of iterations.
+    \item Power method: The \texttt{power\_method} function computes the leading eigenvalue and corresponding eigenvector of a matrix. It starts with a random vector, which is iteratively updated by multiplying with the matrix and normalizing. The leading eigenvalue is calculated using the Rayleigh quotient.
+    \item Deflation method: The \texttt{deflation} function finds all eigenvalues and eigenvectors of a symmetric matrix. It applies the power method and then performs matrix deflation by subtracting the outer product of the found eigenvector and its corresponding eigenvalue. This process is repeated until all eigenvalues and eigenvectors are found.
+    \item Singular values and vectors: The \texttt{singular\_values\_vectors} function computes the singular values and singular vectors of a matrix. It applies the power method and deflation to both \( A^TA \) and \( AA^T \) to find the right and left singular vectors, respectively. The singular values are the square roots of the eigenvalues of \( A^TA \).
+    \item Random matrix generator: The \texttt{rand\_matrix\_generator} function generates a random symmetric matrix. It creates a matrix with random values and forms a symmetric matrix by multiplying it with its transpose.
+    \item Displaying computations and calling all the methods: The \texttt{display\_computations} function integrates the above methods to compute and display the leading eigenvalue, all eigenvalues and eigenvectors, and singular values/vectors. It also compares these results with Julia's built-in functions for eigenvalues/eigenvectors and singular value decomposition.
+\end{itemize}
+Each method is written separately to make it easier to see what is being calculated in each function. Additionally, functions that are unaffected by symmetric matrices don't necessarily have to then be given symmetric matrices allowing for a wide variety of calculations.
+
+
+\section{Bibliography}
+While doing our project we used different sources, as listed below 
+\begin{enumerate}
+    \item \href{https://ergodic.ugr.es/cphys/lecciones/fortran/power_method.pdf}{10.3 POWER METHOD FOR APPROXIMATING EIGENVALUES}
+    
+    \item \href {https://www.sciencedirect.com/topics/mathematics/power-method#:~:text=%E2%80%A2-,The%20Power%20Method%20is%20used%20to%20find%20a%20dominant%20eigenvalue,exists%2C%20and%20a%20corresponding%20eigenvector.&text=%E2%80%A2-,To%20apply%20the%20Power%20Method%20to%20a%20square%20matrix%20A,eigenvector%20of%20the%20dominant%20eigenvalue}{Power Method - an overview | ScienceDirect Topics.}
+    
+    \item \href{https://www.math.kent.edu/~reichel/courses/intr.num.comp.2/lecture21/evmeth.pdf}{Lecture 14: Eigenvalue Computations The power method - symmetric matrices}
+
+    \item \href{https://pythonnumericalmethods.berkeley.edu/notebooks/chapter15.02-The-Power-Method.html}{The Power Method}
+
+    \item \href{https://pythonnumericalmethods.berkeley.edu/notebooks/chapter15.03-The-QR-Method.html}{The QR Method}
+
+    \item \href{https://astarmathsandphysics.com/university-maths-notes/matrices-and-linear-algebra/4554-the-deflation-method-for-finding-eigenvalues-and-eigenvectors.html}{The Deflation Method for Finding Eigenvalues and Eigenvectors}
+
+    \item \href{https://services.math.duke.edu/~jtwong/math361-2019/lectures/Lec10eigenvalues.pdf}{Math 361S Lecture notes Finding eigenvalues: The power method}
+
+    \item \href{https://www.geeksforgeeks.org/manipulating-matrices-in-julia/}{Manipulating Matrices}
+    
+    
+\end{enumerate}
+
+
+\end{document}

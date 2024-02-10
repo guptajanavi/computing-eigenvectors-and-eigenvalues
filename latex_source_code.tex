@@ -1,0 +1,1778 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{21241\_final\_project}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@ges}{\let\PY@bf=\textbf\let\PY@it=\textit}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{131}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{using}\PY{+w}{ }\PY{n}{LinearAlgebra}
+\PY{k}{using}\PY{+w}{ }\PY{n}{PrettyTables}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{132}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Function to approximate the leading eigenvalue of a matrix using the QR method}
+\PY{k}{function}\PY{+w}{ }\PY{n}{qr\PYZus{}method}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{    }\PY{c}{\PYZsh{} Initialize A\PYZus{}k with the input matrix A}
+\PY{+w}{    }\PY{n}{A\PYZus{}k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{copy}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Iterate up to a maximum number of iterations}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{max\PYZus{}iter}
+\PY{+w}{        }\PY{c}{\PYZsh{} Perform QR decomposition on A\PYZus{}k}
+\PY{+w}{        }\PY{n}{Q}\PY{p}{,}\PY{+w}{ }\PY{n}{R}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{qr}\PY{p}{(}\PY{n}{A\PYZus{}k}\PY{p}{)}
+\PY{+w}{        }\PY{c}{\PYZsh{} Form the next matrix A\PYZus{}k by multiplying R and Q}
+\PY{+w}{        }\PY{n}{A\PYZus{}k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{R}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{Q}
+\PY{+w}{    }\PY{k}{end}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} \PYZsh{} Return the leading eigenvalue, which is the first diagonal element of A\PYZus{}k}
+\PY{+w}{    }\PY{k}{return}\PY{+w}{ }\PY{n}{A\PYZus{}k}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{132}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+qr\_method (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{133}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Define a function to compute the leading eigenvalue using the Power Method}
+\PY{k}{function}\PY{+w}{ }\PY{n}{power\PYZus{}method}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{    }\PY{c}{\PYZsh{} Determine the size of the matrix A and initialize a random vector of this size }
+\PY{+w}{    }\PY{n}{n}\PY{p}{,}\PY{+w}{ }\PY{n}{\PYZus{}}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{size}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+\PY{+w}{    }\PY{n}{v}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{rand}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{+w}{  }\PY{c}{\PYZsh{} Start with a random vector}
+\PY{+w}{    }\PY{n}{v}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{v}\PY{+w}{ }\PY{o}{/}\PY{+w}{ }\PY{n}{norm}\PY{p}{(}\PY{n}{v}\PY{p}{)}\PY{+w}{  }\PY{c}{\PYZsh{} Normalize the vector}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Iterate for a maximum number of iterations or until convergence}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{\PYZus{}}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{max\PYZus{}iter}
+\PY{+w}{        }\PY{c}{\PYZsh{} Multiply the vector by the matrix A}
+\PY{+w}{        }\PY{n}{v\PYZus{}new}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{A}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{v}
+\PY{+w}{        }\PY{c}{\PYZsh{} Normalize the resulting vector}
+\PY{+w}{        }\PY{n}{v\PYZus{}new}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{v\PYZus{}new}\PY{+w}{ }\PY{o}{/}\PY{+w}{ }\PY{n}{norm}\PY{p}{(}\PY{n}{v\PYZus{}new}\PY{p}{)}
+\PY{+w}{        }\PY{c}{\PYZsh{} Update the vector for the next iteration}
+\PY{+w}{        }\PY{n}{v}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{v\PYZus{}new}
+\PY{+w}{    }\PY{k}{end}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Calculate the leading eigenvalue which is done by the Rayleigh quotient: (v\PYZsq{}Av) / (v\PYZsq{}v)}
+\PY{+w}{    }\PY{n}{eigenvalue}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{dot}\PY{p}{(}\PY{n}{A}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{v}\PY{p}{,}\PY{+w}{ }\PY{n}{v}\PY{p}{)}\PY{+w}{ }\PY{o}{/}\PY{+w}{ }\PY{n}{dot}\PY{p}{(}\PY{n}{v}\PY{p}{,}\PY{+w}{ }\PY{n}{v}\PY{p}{)}
+\PY{+w}{    }\PY{k}{return}\PY{+w}{ }\PY{n}{eigenvalue}\PY{p}{,}\PY{+w}{ }\PY{n}{v}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{133}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+power\_method (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{134}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Function to find all eigenvalues and eigenvectors of a symmetric matrix using deflation}
+\PY{k}{function}\PY{+w}{ }\PY{n}{deflation}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{    }\PY{n}{k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{size}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{)}
+\PY{+w}{    }\PY{n}{eigenvalues}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{p}{[}\PY{p}{]}
+\PY{+w}{    }\PY{n}{eigenvectors}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{p}{[}\PY{p}{]}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Main loop for finding all eigenvalues and eigenvectors}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{i}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{k}
+\PY{+w}{        }\PY{n}{eigenvalue}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvector}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{power\PYZus{}method}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{        }\PY{n}{push!}\PY{p}{(}\PY{n}{eigenvalues}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvalue}\PY{p}{)}
+\PY{+w}{        }\PY{n}{push!}\PY{p}{(}\PY{n}{eigenvectors}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvector}\PY{p}{)}
+\PY{+w}{        }\PY{n}{A}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{A}\PY{+w}{ }\PY{o}{\PYZhy{}}\PY{+w}{ }\PY{n}{eigenvalue}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{eigenvector}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{transpose}\PY{p}{(}\PY{n}{eigenvector}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}
+
+\PY{+w}{    }\PY{k}{return}\PY{+w}{ }\PY{n}{eigenvalues}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvectors}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{134}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+deflation (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{135}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{}Function to obtain all the singular values and singular vectors}
+\PY{k}{function}\PY{+w}{ }\PY{n}{singular\PYZus{}values\PYZus{}vectors}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+
+\PY{n}{v\PYZus{}eigenvalue}\PY{p}{,}\PY{+w}{ }\PY{n}{v\PYZus{}eigenvector}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{power\PYZus{}method}\PY{p}{(}\PY{n}{transpose}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{n}{singular\PYZus{}values}\PY{p}{,}\PY{+w}{ }\PY{n}{v\PYZus{}singular\PYZus{}vectors}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{deflation}\PY{p}{(}\PY{n}{transpose}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{n}{singular\PYZus{}values}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{sqrt}\PY{o}{.}\PY{p}{(}\PY{n}{singular\PYZus{}values}\PY{p}{)}
+
+\PY{n}{u\PYZus{}eigenvalue}\PY{p}{,}\PY{+w}{ }\PY{n}{u\PYZus{}eigenvector}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{power\PYZus{}method}\PY{p}{(}\PY{n}{A}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{transpose}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{n}{\PYZus{}}\PY{p}{,}\PY{+w}{ }\PY{n}{u\PYZus{}singular\PYZus{}vectors}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{deflation}\PY{p}{(}\PY{n}{A}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{transpose}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+
+\PY{k}{return}\PY{+w}{ }\PY{n}{singular\PYZus{}values}\PY{p}{,}\PY{+w}{ }\PY{n}{v\PYZus{}singular\PYZus{}vectors}\PY{p}{,}\PY{+w}{ }\PY{n}{u\PYZus{}singular\PYZus{}vectors}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{135}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+singular\_values\_vectors (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{136}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{}Function to generate a random symmetric matrix A and A\PYZca{}TA}
+\PY{k}{function}\PY{+w}{ }\PY{n}{rand\PYZus{}matrix\PYZus{}generator}\PY{p}{(}\PY{n}{size}\PY{p}{,}\PY{+w}{ }\PY{n}{min\PYZus{}val}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}val}\PY{p}{)}
+\PY{+w}{    }\PY{n}{X}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{rand}\PY{p}{(}\PY{n}{min\PYZus{}val}\PY{+w}{ }\PY{o}{:}\PY{+w}{ }\PY{n}{max\PYZus{}val}\PY{p}{,}\PY{+w}{ }\PY{n}{size}\PY{p}{,}\PY{+w}{ }\PY{n}{size}\PY{p}{)}
+\PY{+w}{    }\PY{n}{A}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{transpose}\PY{p}{(}\PY{n}{X}\PY{p}{)}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{X}
+\PY{+w}{    }\PY{k}{return}\PY{+w}{ }\PY{n}{A}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{136}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+rand\_matrix\_generator (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{137}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{}Function to compute and display all the eigenvalues and eigenvectors}
+\PY{k}{function}\PY{+w}{ }\PY{n}{display\PYZus{}computations}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter\PYZus{}qr}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter\PYZus{}pm}\PY{p}{)}
+\PY{+w}{    }\PY{c}{\PYZsh{}get leading eigenvalue from QR method}
+\PY{+w}{    }\PY{n}{eigenvalue\PYZus{}qr}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{qr\PYZus{}method}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter\PYZus{}qr}\PY{p}{)}
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{A\PYZsq{}s leading eigenvalue (QR method)}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvalue\PYZus{}qr}\PY{p}{)}
+
+\PY{+w}{    }\PY{c}{\PYZsh{}get leading eigenvector and eigenvalue from the power method}
+\PY{+w}{    }\PY{n}{eigenvalue\PYZus{}pm}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvector\PYZus{}pm}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{power\PYZus{}method}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter\PYZus{}pm}\PY{p}{)}
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{A\PYZsq{}s leading eigenvector (Power method):}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvector\PYZus{}pm}\PY{p}{)}
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{A\PYZsq{}s leading eigenvalue (Power method and Raleigh quotient):}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvalue\PYZus{}pm}\PY{p}{)}
+
+\PY{+w}{    }\PY{c}{\PYZsh{}get all eigenvalues and eigenvectors}
+\PY{+w}{    }\PY{n}{eigenvalues}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvectors}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{deflation}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter\PYZus{}pm}\PY{p}{)}
+\PY{+w}{    }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{A\PYZsq{}s eigenvectors and corresponding eigenvalues (Deflation):}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{i}\PY{+w}{ }\PY{k}{in}\PY{+w}{ }\PY{n}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{+w}{ }\PY{n}{length}\PY{p}{(}\PY{n}{eigenvectors}\PY{p}{)}\PY{p}{)}
+\PY{+w}{        }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Eigenvector number }\PY{l+s}{\PYZdq{}}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{string}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{l+s}{\PYZdq{}}\PY{l+s}{ is:}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvectors}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{+w}{        }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{And has corresponding eigenvalue:}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvalues}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{+w}{        }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}
+
+\PY{+w}{    }\PY{c}{\PYZsh{}get all singular vectors and singular values}
+\PY{+w}{    }\PY{n}{singular\PYZus{}values}\PY{p}{,}\PY{+w}{ }\PY{n}{left\PYZus{}singular\PYZus{}vectors}\PY{p}{,}\PY{+w}{ }\PY{n}{right\PYZus{}singular\PYZus{}vectors}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{singular\PYZus{}values\PYZus{}vectors}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter\PYZus{}pm}\PY{p}{)}
+\PY{+w}{    }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{A\PYZsq{}s singular vectors for matrix V in A\PYZsq{}s SVD are:}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{i}\PY{+w}{ }\PY{k}{in}\PY{+w}{ }\PY{n}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{+w}{ }\PY{n}{length}\PY{p}{(}\PY{n}{left\PYZus{}singular\PYZus{}vectors}\PY{p}{)}\PY{p}{)}
+\PY{+w}{        }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Singular vector number }\PY{l+s}{\PYZdq{}}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{string}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{l+s}{\PYZdq{}}\PY{l+s}{ is:}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{left\PYZus{}singular\PYZus{}vectors}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}\PY{+w}{    }
+\PY{+w}{    }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{A\PYZsq{}s singular vectors for matrix U in A\PYZsq{}s SVD are:}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{i}\PY{+w}{ }\PY{k}{in}\PY{+w}{ }\PY{n}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{+w}{ }\PY{n}{length}\PY{p}{(}\PY{n}{right\PYZus{}singular\PYZus{}vectors}\PY{p}{)}\PY{p}{)}
+\PY{+w}{        }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Singular vector number }\PY{l+s}{\PYZdq{}}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{string}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{l+s}{\PYZdq{}}\PY{l+s}{ is:}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{right\PYZus{}singular\PYZus{}vectors}\PY{p}{[}\PY{n}{i}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}
+\PY{+w}{    }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{A\PYZsq{}s singular values are:}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{singular\PYZus{}values}\PY{p}{)}
+
+\PY{+w}{    }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{println}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Julia\PYZsq{}s Output to compare}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{eigvals}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{eigvecs}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{svd}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{137}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+display\_computations (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{139}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{}Running our functions}
+\PY{n}{A}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{rand\PYZus{}matrix\PYZus{}generator}\PY{p}{(}\PY{l+m+mi}{8}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{14}\PY{p}{)}
+\PY{n}{display\PYZus{}computations}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{11}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{11}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+A's leading eigenvalue (QR method)
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3706.6197377438066
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+A's leading eigenvector (Power method):
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ 0.3513608224753594
+ 0.37638183990226576
+ 0.3237371058940461
+ 0.32864052652044595
+ 0.28750607067702877
+ 0.2945645790232591
+ 0.3102680156972951
+ 0.5063375358008766
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+A's leading eigenvalue (Power method and Raleigh quotient):
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3706.6197377438125
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+A's eigenvectors and corresponding eigenvalues (Deflation):
+Eigenvector number 1 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ 0.351360822475992
+ 0.3763818399045702
+ 0.3237371058940415
+ 0.32864052652215336
+ 0.28750607067694306
+ 0.2945645790215287
+ 0.31026801569583873
+ 0.5063375357995669
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3706.619737743812
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Eigenvector number 2 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.14571551613931755
+  0.6033476030755105
+ -0.03655637427851586
+  0.4279101425701151
+  0.015203163364386573
+ -0.4202180831804913
+ -0.370047458248081
+ -0.3413879093355321
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+380.82371257775554
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Eigenvector number 3 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.25360418740957874
+  0.27324405248271455
+ -0.5867753620222746
+ -0.11108035160359431
+  0.6112811260590814
+  0.3374063824440383
+  0.010179994276021861
+ -0.1294879131382918
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+316.6112888725979
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Eigenvector number 4 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.14479027505085648
+  0.28515556005123127
+  0.38619850935107053
+ -0.4310838100757833
+  0.19973712688819506
+ -0.30792437131169925
+  0.5520123908990922
+ -0.35115455981196486
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+185.83444412027958
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Eigenvector number 5 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.017664417859922416
+  0.4253602654085433
+ -0.4078677800266019
+ -0.06503699991839602
+ -0.6853129067817778
+  0.16333342881167237
+  0.38547950712171036
+  0.05696170670867869
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+74.94648539345816
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Eigenvector number 6 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.5014680359460327
+ -0.2388432661000973
+ -0.1215065561743243
+  0.6357019236098919
+  0.05897685800826313
+ -0.28315930677305284
+  0.43081039424468226
+  0.05786074408806446
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+45.27278198455453
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Eigenvector number 7 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.6021546427501092
+ -0.3104373074456427
+ -0.16400780699191936
+  0.2273149350154011
+  0.04986095031691271
+  0.17667849492608365
+  0.33207741763012194
+ -0.5643500754755785
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+23.701241446165888
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Eigenvector number 8 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.3942384538645349
+  0.09202856509942431
+  0.4361751313517652
+  0.2240837200299576
+ -0.1717457742789772
+  0.6214834143606667
+ -0.12927103460524353
+ -0.4039743558842078
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+And has corresponding eigenvalue:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+13.225754959699774
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+A's singular vectors for matrix V in A's SVD are:
+Singular vector number 1 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ 0.35136082247487804
+ 0.3763818399002095
+ 0.3237371058941957
+ 0.3286405265190035
+ 0.2875060706769486
+ 0.2945645790246673
+ 0.31026801569854606
+ 0.5063375358020394
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 2 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.13446246714199986
+ -0.6145149653100952
+  0.06165940230197924
+ -0.42226936888861333
+ -0.041741132335195885
+  0.40523438581096294
+  0.3687783520891321
+  0.34673217042034815
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 3 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.2618641573347747
+  0.2444004526946695
+ -0.5815705398649463
+ -0.13592696382362113
+  0.6114480151789907
+  0.3562360870043977
+  0.03305751175149655
+ -0.11458414139462526
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+Singular vector number 4 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.14168977911716651
+ -0.2813837227396289
+ -0.3935758979517547
+  0.42992318919974126
+ -0.19207110017692253
+  0.31191827481249473
+ -0.552078623662145
+  0.3493367238365371
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 5 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.016279171892507566
+ -0.42603601228306925
+  0.4075128248518765
+  0.06682537331644675
+  0.6854630454405086
+ -0.1641100949185373
+ -0.38428981453502836
+ -0.05679436933958514
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.5015891838415605
+  0.23685729988522544
+  0.1233790243566879
+ -0.6353841632853213
+ -0.05580897256448246
+  0.28241750911344493
+ -0.43256709496941037
+ -0.05816278033605849
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 6 is:
+Singular vector number 7 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.6022206153255303
+ -0.31048401690461275
+ -0.16418563883669587
+  0.22732074756374882
+  0.0499012843025556
+  0.17643798761033988
+  0.3321917950922549
+ -0.5642042795627437
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 8 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.3938768218942008
+  0.09183966117273942
+  0.4360753132162502
+  0.22422435716256298
+ -0.17171535869363252
+  0.621588832271
+ -0.12906804033445296
+ -0.4043153284473653
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+A's singular vectors for matrix U in A's SVD are:
+Singular vector number 1 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ 0.35136082247487804
+ 0.3763818399002095
+ 0.3237371058941957
+ 0.3286405265190035
+ 0.2875060706769486
+ 0.2945645790246673
+ 0.31026801569854606
+ 0.5063375358020394
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 2 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.10775382983545327
+  0.6356244759336097
+ -0.11911648826083002
+  0.40658656978844104
+  0.10226985221743627
+ -0.3677539301662794
+ -0.36359088384543137
+ -0.3563268928963543
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 3 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.27853379311488524
+  0.1540105651328689
+ -0.5668352883785468
+ -0.1951390309809521
+  0.5993972654035542
+  0.41063938223714014
+  0.08566497714236794
+ -0.06385854704698624
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 4 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.14150897886228334
+  0.28128021660609265
+  0.39394552047274967
+ -0.4297981826037624
+  0.19168033791736275
+ -0.3121837417520839
+  0.5520246645425246
+ -0.34929332509455097
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 5 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.016262189912691027
+  0.42604403980048755
+ -0.40750863703018686
+ -0.06684690003569217
+ -0.6854649303289657
+  0.1641196507795538
+  0.384275179863193
+  0.056792391122013605
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 6 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.5015907494037682
+  0.23681773135439324
+  0.12341682697445912
+ -0.635377936899505
+ -0.0557453538219592
+  0.2824022944299186
+ -0.43260272491583596
+ -0.05816810443005255
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 7 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+  0.6022191959178412
+ -0.3104829537785075
+ -0.16418434972822868
+  0.22732225992855612
+  0.04990087109688192
+  0.17643959910188997
+  0.3321910331416273
+ -0.5642061266586615
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Singular vector number 8 is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ -0.3405179253335854
+  0.29767210159497315
+  0.3649656831408873
+  0.3426645868690311
+ -0.12033291313833257
+  0.4720313360557701
+ -0.24017315312850274
+ -0.4998431332000915
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+A's singular values are:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+ 3706.619737743812
+  380.9711771879006
+  316.44171865432446
+  185.82225295647052
+   74.94671524695414
+   45.272401503073965
+   23.701242414976036
+   13.225752844573659
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+-----------------------------------------------------
+Julia's Output to compare
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8-element Vector\{Float64\}:
+   13.225752844526445
+   23.70124241494957
+   45.272401501636026
+   74.94671524727146
+  185.8222528779295
+  316.4393799764263
+  380.97251739344813
+ 3706.619737743812
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+8×8 Matrix\{Float64\}:
+  0.393879   -0.602221   0.501589   …   0.262792    0.133212   -0.351361
+ -0.0918407   0.310483   0.236862      -0.240159    0.615666   -0.376382
+ -0.436076    0.164185   0.123375       0.581135   -0.0644282  -0.323737
+ -0.224224   -0.22732   -0.635385       0.138846    0.421613   -0.328641
+  0.171716   -0.049901  -0.0558159     -0.611157    0.0446528  -0.287506
+ -0.621588   -0.176439   0.282419   …  -0.359027   -0.403529   -0.294565
+  0.129069   -0.332191  -0.432563      -0.0356102  -0.368613   -0.310268
+  0.404314    0.564205  -0.0581619      0.112194   -0.347271   -0.506338
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+SVD\{Float64, Float64, Matrix\{Float64\}, Vector\{Float64\}\}
+U factor:
+8×8 Matrix\{Float64\}:
+ -0.351361   0.133212    0.262792   …   0.501589   -0.602221   0.393879
+ -0.376382   0.615666   -0.240159       0.236862    0.310483  -0.0918407
+ -0.323737  -0.0644282   0.581135       0.123375    0.164185  -0.436076
+ -0.328641   0.421613    0.138846      -0.635385   -0.22732   -0.224224
+ -0.287506   0.0446528  -0.611157      -0.0558159  -0.049901   0.171716
+ -0.294565  -0.403529   -0.359027   …   0.282419   -0.176439  -0.621588
+ -0.310268  -0.368613   -0.0356102     -0.432563   -0.332191   0.129069
+ -0.506338  -0.347271    0.112194      -0.0581619   0.564205   0.404314
+singular values:
+8-element Vector\{Float64\}:
+ 3706.6197377438125
+  380.9725173934479
+  316.4393799764264
+  185.8222528779295
+   74.9467152472715
+   45.27240150163626
+   23.70124241494977
+   13.225752844526577
+Vt factor:
+8×8 Matrix\{Float64\}:
+ -0.351361  -0.376382   -0.323737   …  -0.294565  -0.310268   -0.506338
+  0.133212   0.615666   -0.0644282     -0.403529  -0.368613   -0.347271
+  0.262792  -0.240159    0.581135      -0.359027  -0.0356102   0.112194
+ -0.14168    0.281375    0.393597      -0.311931   0.552078   -0.349332
+ -0.016281   0.426035   -0.407513       0.164109   0.384291    0.0567946
+  0.501589   0.236862    0.123375   …   0.282419  -0.432563   -0.0581619
+ -0.602221   0.310483    0.164185      -0.176439  -0.332191    0.564205
+  0.393879  -0.0918407  -0.436076      -0.621588   0.129069    0.404314
+    \end{Verbatim}
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{140}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{A\PYZus{}QR}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{7}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{;}\PY{+w}{ }\PY{p}{[}\PY{l+m+mi}{1}\PY{+w}{ }\PY{l+m+mi}{7}\PY{p}{]}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{140}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+2×2 Matrix\{Int64\}:
+ 7  1
+ 1  7
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{141}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Function to approximate the leading eigenvalue of a matrix using the QR method (example)}
+\PY{k}{function}\PY{+w}{ }\PY{n}{qr\PYZus{}method\PYZus{}example}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{    }\PY{c}{\PYZsh{} Initialize A\PYZus{}k with the input matrix A}
+\PY{+w}{    }\PY{n}{A\PYZus{}k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{copy}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Iterate up to a maximum number of iterations}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{max\PYZus{}iter}
+\PY{+w}{        }\PY{c}{\PYZsh{} Perform QR decomposition on A\PYZus{}k}
+\PY{+w}{        }\PY{n}{Q}\PY{p}{,}\PY{+w}{ }\PY{n}{R}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{qr}\PY{p}{(}\PY{n}{A\PYZus{}k}\PY{p}{)}
+\PY{+w}{        }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{Q: }\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{Q}\PY{p}{)}
+\PY{+w}{        }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{R: }\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{R}\PY{p}{)}
+\PY{+w}{        }\PY{c}{\PYZsh{} Form the next matrix A\PYZus{}k by multiplying R and Q}
+\PY{+w}{        }\PY{n}{A\PYZus{}k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{R}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{Q}
+\PY{+w}{    }\PY{k}{end}
+
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{The leading eigevalue of A is: }\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{c}{\PYZsh{} \PYZsh{} Return the leading eigenvalue, which is the first diagonal element of A\PYZus{}k}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{A\PYZus{}k}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{+w}{    }\PY{k}{return}\PY{+w}{ }\PY{n}{A\PYZus{}k}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{141}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+qr\_method\_example (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{142}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{qr\PYZus{}method\PYZus{}example}\PY{p}{(}\PY{n}{A\PYZus{}QR}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Q:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 LinearAlgebra.QRCompactWYQ\{Float64, Matrix\{Float64\}, Matrix\{Float64\}\}:
+ -0.989949  -0.141421
+ -0.141421   0.989949
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+R:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 Matrix\{Float64\}:
+ -7.07107  -1.9799
+  0.0       6.78823
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Q:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 LinearAlgebra.QRCompactWYQ\{Float64, Matrix\{Float64\}, Matrix\{Float64\}\}:
+ -0.991417  0.130736
+  0.130736  0.991417
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+R:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 Matrix\{Float64\}:
+ -7.34302  1.83031
+  0.0      6.53682
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Q:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 LinearAlgebra.QRCompactWYQ\{Float64, Matrix\{Float64\}, Matrix\{Float64\}\}:
+ -0.993603  -0.112927
+ -0.112927   0.993603
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+R:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 Matrix\{Float64\}:
+ -7.5677  -1.58098
+  0.0      6.34275
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Q:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 LinearAlgebra.QRCompactWYQ\{Float64, Matrix\{Float64\}, Matrix\{Float64\}\}:
+ -0.995699   0.0926481
+  0.0926481  0.995699
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+R:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 Matrix\{Float64\}:
+ -7.73108  1.29707
+  0.0      6.20871
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Q:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 LinearAlgebra.QRCompactWYQ\{Float64, Matrix\{Float64\}, Matrix\{Float64\}\}:
+ -0.997304   -0.0733787
+ -0.0733787   0.997304
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+R:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2×2 Matrix\{Float64\}:
+ -7.83913  -1.0273
+  0.0       6.12313
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The leading eigevalue of A is:
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+7.893377271188352
+    \end{Verbatim}
+
+    
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{142}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+7.893377271188352
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{143}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{A\PYZus{}Power}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{7}\PY{+w}{ }\PY{l+m+mi}{3}\PY{+w}{ }\PY{l+m+mi}{5}\PY{p}{]}\PY{p}{;}\PY{+w}{ }\PY{p}{[}\PY{l+m+mi}{3}\PY{+w}{ }\PY{l+m+mi}{5}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{;}\PY{+w}{ }\PY{p}{[}\PY{l+m+mi}{5}\PY{+w}{ }\PY{l+m+mi}{1}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{143}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+3×3 Matrix\{Int64\}:
+ 7  3  5
+ 3  5  1
+ 5  1  1
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{144}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Define a function to compute the leading eigenvalue using the Power Method (Example)}
+\PY{k}{function}\PY{+w}{ }\PY{n}{power\PYZus{}method\PYZus{}example}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{    }\PY{c}{\PYZsh{} Determine the size of the matrix A and initialize a random vector of this size }
+\PY{+w}{    }\PY{n}{n}\PY{p}{,}\PY{+w}{ }\PY{n}{\PYZus{}}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{size}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+\PY{+w}{    }\PY{n}{v}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{rand}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{+w}{  }\PY{c}{\PYZsh{} Start with a random vector}
+\PY{+w}{    }\PY{n}{v}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{v}\PY{+w}{ }\PY{o}{/}\PY{+w}{ }\PY{n}{norm}\PY{p}{(}\PY{n}{v}\PY{p}{)}\PY{+w}{  }\PY{c}{\PYZsh{} Normalize the vector}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Iterate for a maximum number of iterations or until convergence}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{\PYZus{}}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{max\PYZus{}iter}
+\PY{+w}{        }\PY{c}{\PYZsh{} Multiply the vector by the matrix A}
+\PY{+w}{        }\PY{n}{v\PYZus{}new}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{A}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{v}\PY{+w}{        }
+\PY{+w}{        }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{The updated vector is }\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{v\PYZus{}new}\PY{p}{)}
+\PY{+w}{        }\PY{c}{\PYZsh{} Normalize the resulting vector}
+\PY{+w}{        }\PY{n}{v\PYZus{}new}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{v\PYZus{}new}\PY{+w}{ }\PY{o}{/}\PY{+w}{ }\PY{n}{norm}\PY{p}{(}\PY{n}{v\PYZus{}new}\PY{p}{)}
+\PY{+w}{        }\PY{c}{\PYZsh{} Update the vector for the next iteration}
+\PY{+w}{        }\PY{n}{v}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{v\PYZus{}new}
+\PY{+w}{    }\PY{k}{end}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Calculate the leading eigenvalue which is done by the Rayleigh quotient: (v\PYZsq{}Av) / (v\PYZsq{}v)}
+\PY{+w}{    }\PY{n}{eigenvalue}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{dot}\PY{p}{(}\PY{n}{A}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{v}\PY{p}{,}\PY{+w}{ }\PY{n}{v}\PY{p}{)}\PY{+w}{ }\PY{o}{/}\PY{+w}{ }\PY{n}{dot}\PY{p}{(}\PY{n}{v}\PY{p}{,}\PY{+w}{ }\PY{n}{v}\PY{p}{)}
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{The leading eigenvalue is }\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvalue}\PY{p}{)}
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{The leading eigenvector is }\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{n}{display}\PY{p}{(}\PY{n}{v}\PY{p}{)}
+\PY{+w}{    }\PY{k}{return}\PY{+w}{ }\PY{n}{eigenvalue}\PY{p}{,}\PY{+w}{ }\PY{n}{v}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{144}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+power\_method\_example (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{153}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{power\PYZus{}method\PYZus{}example}\PY{p}{(}\PY{n}{A\PYZus{}Power}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+The updated vector is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ 8.161030539868374
+ 4.627094182971236
+ 3.3134414620023938
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The updated vector is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ 8.802075512800766
+ 5.119083565097348
+ 4.899340934828883
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The updated vector is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ 8.979684450238407
+ 5.035582211875657
+ 4.7814018188575576
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The updated vector is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ 8.974382615152209
+ 5.012466428032355
+ 4.820158385228858
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The updated vector is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ 8.980518953209506
+ 5.0034304465975765
+ 4.818365892732459
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The leading eigenvalue is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+11.35345127702423
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The leading eigenvector is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ 0.7909951454764633
+ 0.4406971595526109
+ 0.42439685837071095
+    \end{Verbatim}
+
+    
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{153}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(11.35345127702423, [0.7909951454764633, 0.4406971595526109,
+0.42439685837071095])
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{145}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{A\PYZus{}Deflation}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{7}\PY{+w}{ }\PY{l+m+mi}{3}\PY{+w}{ }\PY{l+m+mi}{5}\PY{p}{]}\PY{p}{;}\PY{+w}{ }\PY{p}{[}\PY{l+m+mi}{3}\PY{+w}{ }\PY{l+m+mi}{5}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{;}\PY{+w}{ }\PY{p}{[}\PY{l+m+mi}{5}\PY{+w}{ }\PY{l+m+mi}{1}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{145}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+3×3 Matrix\{Int64\}:
+ 7  3  5
+ 3  5  1
+ 5  1  1
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{156}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c}{\PYZsh{} Function to find all eigenvalues and eigenvectors of a symmetric matrix using deflation (Example)}
+\PY{k}{function}\PY{+w}{ }\PY{n}{deflation\PYZus{}example}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{    }\PY{n}{k}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{size}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{)}
+\PY{+w}{    }\PY{n}{eigenvalues}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{p}{[}\PY{p}{]}
+\PY{+w}{    }\PY{n}{eigenvectors}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{p}{[}\PY{p}{]}
+
+\PY{+w}{    }\PY{c}{\PYZsh{} Main loop for finding all eigenvalues and eigenvectors}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{i}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{k}
+\PY{+w}{        }\PY{n}{eigenvalue}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvector}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{power\PYZus{}method}\PY{p}{(}\PY{n}{A}\PY{p}{,}\PY{+w}{ }\PY{n}{max\PYZus{}iter}\PY{p}{)}
+\PY{+w}{        }\PY{n}{push!}\PY{p}{(}\PY{n}{eigenvalues}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvalue}\PY{p}{)}
+\PY{+w}{        }\PY{n}{push!}\PY{p}{(}\PY{n}{eigenvectors}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvector}\PY{p}{)}
+\PY{+w}{        }\PY{n}{A}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{n}{A}\PY{+w}{ }\PY{o}{\PYZhy{}}\PY{+w}{ }\PY{n}{eigenvalue}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{eigenvector}\PY{+w}{ }\PY{o}{*}\PY{+w}{ }\PY{n}{transpose}\PY{p}{(}\PY{n}{eigenvector}\PY{p}{)}
+\PY{+w}{        }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{The new matrix is }\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}
+
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{The list of eigenvalues is}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{i}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{size}\PY{p}{(}\PY{n}{eigenvalues}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvalues}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}
+\PY{+w}{    }\PY{n}{print}\PY{p}{(}\PY{l+s}{\PYZdq{}}\PY{l+s}{The list of eigenvectors is}\PY{l+s}{\PYZdq{}}\PY{p}{)}
+\PY{+w}{    }\PY{k}{for}\PY{+w}{ }\PY{n}{i}\PY{+w}{ }\PY{o}{=}\PY{+w}{ }\PY{l+m+mi}{1}\PY{o}{:}\PY{n}{size}\PY{p}{(}\PY{n}{eigenvectors}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{1}\PY{p}{)}
+\PY{+w}{        }\PY{n}{display}\PY{p}{(}\PY{n}{eigenvectors}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+\PY{+w}{    }\PY{k}{end}
+\PY{+w}{    }\PY{k}{return}\PY{+w}{ }\PY{n}{eigenvalues}\PY{p}{,}\PY{+w}{ }\PY{n}{eigenvectors}
+\PY{k}{end}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{156}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+deflation\_example (generic function with 1 method)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{157}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{deflation\PYZus{}example}\PY{p}{(}\PY{n}{A\PYZus{}Deflation}\PY{p}{,}\PY{+w}{ }\PY{l+m+mi}{5}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+The new matrix is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3×3 Matrix\{Float64\}:
+ -0.107028  -0.953945   1.18611
+ -0.953945   2.80025   -1.12183
+  1.18611   -1.12183   -1.04667
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The new matrix is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3×3 Matrix\{Float64\}:
+ -0.149139  -0.680337   0.981404
+ -0.680337   1.02252    0.208205
+  0.981404   0.208205  -2.04176
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The new matrix is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3×3 Matrix\{Float64\}:
+  0.272566   -0.539916   0.0513521
+ -0.539916    1.06927   -0.101489
+  0.0513521  -0.101489   0.00943407
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The list of eigenvalues is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+11.353452085530611
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+2.8149303216918904
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+-2.5196568848768055
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+The list of eigenvectors is
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ 0.7911886727089043
+ 0.4401721932271454
+ 0.42458088097172625
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+ -0.12230960774710155
+  0.7946934140708866
+ -0.5945609619585772
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+3-element Vector\{Float64\}:
+  0.40910363121697507
+  0.13622557702085586
+ -0.9022620523386873
+    \end{Verbatim}
+
+    
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{157}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(Any[11.353452085530611, 2.8149303216918904, -2.5196568848768055],
+Any[[0.7911886727089043, 0.4401721932271454, 0.42458088097172625],
+[-0.12230960774710155, 0.7946934140708866, -0.5945609619585772],
+[0.40910363121697507, 0.13622557702085586, -0.9022620523386873]])
+\end{Verbatim}
+\end{tcolorbox}
+        
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
